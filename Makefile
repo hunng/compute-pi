@@ -1,11 +1,14 @@
 CC = gcc
-CFLAGS = -O0 -std=gnu99 -Wall -fopenmp -mavx
+CFLAGS = -O0 -std=gnu99 -Wall -fopenmp -mavx -g
 EXECUTABLE = \
 	time_test_baseline time_test_openmp_2 time_test_openmp_4 \
 	time_test_avx time_test_avxunroll \
 	benchmark_clock_gettime
 
 GIT_HOOKS := .git/hooks/pre-commit
+
+sigma: sigma.c sigma.h
+	$(CC) -O0 -std=gnu99 -Wall -g sigma.c sigma.h -o sigma -lm
 
 $(GIT_HOOKS):
 	@scripts/install-git-hooks
@@ -37,5 +40,15 @@ gencsv: default
 		./benchmark_clock_gettime $$i; \
 	done > result_clock_gettime.csv	
 
+plot: default
+	for i in `seq 100 100 9000`; do \
+		printf "%d " $$i;\
+		./benchmark_clock_gettime $$i; \
+	done > data.txt	
+	for i in `seq 9000 100 10000`; do \
+		printf "%d " $$i;\
+		./benchmark_clock_gettime $$i; \
+	done >> data.txt
+	gnuplot plotdata.gp
 clean:
 	rm -f $(EXECUTABLE) *.o *.s result_clock_gettime.csv

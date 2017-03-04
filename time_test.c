@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "computepi.h"
 
 int main(int argc, char const *argv[])
 {
     __attribute__((unused)) int N = 400000000;
+    N = strtol(argv[1], NULL, 10);
     double pi = 0.0;
 
 #if defined(BASELINE)
